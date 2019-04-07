@@ -10,8 +10,10 @@
 namespace ecs
 {
 
+    class System;
     template<typename ...Types>
     class View;
+
     class Registry
     {
     public:
@@ -40,12 +42,16 @@ namespace ecs
             return m_entities[index];
         }
 
+        void update(float delta_time);
+
     private:
         std::vector<std::shared_ptr<Entity>> m_entities;
+        std::vector<std::shared_ptr<System>> m_systems;
     };
 } // ecs
 
 #include "view.hpp"
+#include "system.hpp"
 
 namespace ecs
 {
@@ -65,6 +71,14 @@ namespace ecs
         {
             callback(entity, entity->template get<Types>()...);
         } );
+    }
+
+    void Registry::update(float delta_time)
+    {
+        std::for_each(m_systems.begin(), m_systems.end(), [&](auto system)
+        {
+            system->update(this, delta_time);
+        });
     }
 } // ecs
 
