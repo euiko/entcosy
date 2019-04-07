@@ -9,6 +9,9 @@
 
 namespace ecs
 {
+
+    template<typename ...Types>
+    class View;
     class Registry
     {
     public:
@@ -19,19 +22,51 @@ namespace ecs
             return entity;
         }
 
-        template<typename... T>
-        void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, T*...)>>::type callback)
+        template<typename... Types>
+        void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback);
+
+        template<typename... Types>
+        View<Types...> each();
+
+        size_t getCount() const
         {
-            std::for_each( m_entities.begin(), m_entities.end(), [&](auto entity)
-            {
-                if(entity->template has<T...>())
-                    callback(entity, entity->template get<T>()...);
-            } );
+            return m_entities.size();
+        }
+
+        std::shared_ptr<Entity> getByIndex(size_t index)
+        {
+            if(index >= getCount())
+                return nullptr;
+            return m_entities[index];
         }
 
     private:
         std::vector<std::shared_ptr<Entity>> m_entities;
     };
 } // ecs
+
+#include "view.hpp"
+
+namespace ecs
+{
+    template<typename... Types>
+    inline View<Types...> Registry::each()
+    {
+        core::EntityComponentIterator<Types...> first(this, 0, false);
+        core::EntityComponentIterator<Types...> last(this, getCount(), true);
+        return View<Types...>(first, last);
+    }
+
+    template<typename... Types>
+    void Registry::each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback)
+    {
+        View<Types...> view = each<Types...>();
+        std::for_each(view.begin(), view.end(), [&](auto entity)
+        {
+            callback(entity, entity->template get<Types>()...);
+        } );
+    }
+} // ecs
+
 
 #endif
