@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <algorithm>
 
 #include "entity.hpp"
 
@@ -19,13 +20,13 @@ namespace ecs
         }
 
         template<typename... T>
-        void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, std::shared_ptr<T>...)>>::type callback)
+        void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, T*...)>>::type callback)
         {
-            for (auto entity: m_entities)
+            std::for_each( m_entities.begin(), m_entities.end(), [&](auto entity)
             {
                 if(entity->template has<T...>())
                     callback(entity, entity->template get<T>()...);
-            }
+            } );
         }
 
     private:

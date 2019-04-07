@@ -23,7 +23,7 @@ namespace ecs
         }
 
         template<typename T, typename... TArgs>
-        std::unique_ptr<T> assign(TArgs&& ...args)
+        T* assign(TArgs&& ...args)
         {
             TypeIndex typeId = getTypeIndex<T>();
             auto found = m_components.find(typeId);
@@ -31,17 +31,17 @@ namespace ecs
             {
                 std::shared_ptr<core::ComponentContainer<T>> container= std::reinterpret_pointer_cast<core::ComponentContainer<T>> (found->second);
                 container->component = { args... };
-                return std::make_unique<T>(container->component);
+                return &container->component;
             }
             T component = { args... };
             std::shared_ptr<core::ComponentContainer<T>> container = std::make_shared<core::ComponentContainer<T>>(component);
             m_components.insert({ typeId, container });
 
-            return std::make_unique<T>(container->component);
+            return &container->component;
         }
 
         template<typename T>
-        std::unique_ptr<T> get()
+        T* get()
 		{
 			auto found = m_components.find(getTypeIndex<T>());
 			if (found != m_components.end())
@@ -49,7 +49,7 @@ namespace ecs
                 std::shared_ptr<core::ComponentContainer<T>> container = 
                     std::reinterpret_pointer_cast<core::ComponentContainer<T>> (found->second);
 
-				return std::make_unique<T>(container->component);
+				return &container->component;
 			}
 			else
 			{
@@ -75,7 +75,7 @@ namespace ecs
         {
             // for(auto container : m_components)
             // {
-            //     std::cout << "Entity " << m_id << ": " << container.second.use_count() << "\n";   
+            std::cout << "Desctruction Entity " << m_id << "\n";   
             // }
         }
 
