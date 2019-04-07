@@ -1,9 +1,30 @@
 #ifndef ECS_REGISTRY_HPP
 #define ECS_REGISTRY_HPP
 
+#ifdef USE_HPX
+
+    #include <hpx/hpx_init.hpp>
+    #include <hpx/hpx.hpp>
+    #include <hpx/include/parallel_numeric.hpp>
+    #include <hpx/include/parallel_algorithm.hpp>
+    #include <hpx/parallel/algorithms/fill.hpp>
+
+    #define std_par hpx::parallel
+
+#else 
+
+    #include <pstl/execution>
+    #include <pstl/numeric>
+    #include <pstl/algorithm>
+
+    #define std_par std
+
+#endif
+
 #include <vector>
 #include <functional>
 #include <algorithm>
+#include <mutex>
 
 #include "entity.hpp"
 
@@ -66,10 +87,14 @@ namespace ecs
     template<typename... Types>
     void Registry::each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback)
     {
-        View<Types...> view = each<Types...>();
-        std::for_each(view.begin(), view.end(), [&](auto entity)
+        // View<Types...> view = each<Types...>();
+
+        // std::mutex m;
+        std_par::for_each(std_par::execution::par, m_entities.begin(), m_entities.end(), [&](auto entity)
         {
-            callback(entity, entity->template get<Types>()...);
+            // std::lock_guard<std::mutex> guard(m);
+            if(entity->template has<Types...>())
+                callback(entity, entity->template get<Types>()...);
         } );
     }
 

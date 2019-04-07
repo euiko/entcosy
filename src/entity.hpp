@@ -75,7 +75,7 @@ namespace ecs
         {
             // for(auto container : m_components)
             // {
-            std::cout << "Desctruction Entity " << m_id << "\n";   
+            // std::cout << "Desctruction Entity " << m_id << "\n";   
             // }
         }
 

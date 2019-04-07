@@ -33,17 +33,13 @@ int main()
 {
     ecs::Registry registry;
     // std::vector<ecs::Entity> entities;
-    double start = clock();
-    for(int i = 0; i < 999; i++)
+    for(int i = 0; i < 999999; i++)
     {
         std::shared_ptr<ecs::Entity> entity = registry.create();
         entity->assign<PositionComponent>(rand()%10, 1);
         // entity.assign<PositionComponent>(rand()%10, rand()%20);
         // entities.push_back(entity);
     }
-    double end = clock();
-    double cpuTime= (end - start) / (CLOCKS_PER_SEC);
-    std::cout << cpuTime << "\n";
     { 
         std::shared_ptr<ecs::Entity> entity = registry.create();
         entity->assign<PositionComponent>(rand()%10, 1);
@@ -54,18 +50,32 @@ int main()
         entity->assign<PositionComponent>(rand()%10, 1);
         entity->assign<EnemyTag>();
     }
-    std::cout << "Halo";
-    registry.each<PositionComponent>([&](std::shared_ptr<ecs::Entity> entity,
-        PositionComponent* pc)
+    // std::cout << "Halo";
+    double start = clock();
+    double end;
+    double cpuTime;
+    while (1)
     {
-         pc->y = 10;
-    });
+        end = clock();
+        cpuTime =  (end - start) / (CLOCKS_PER_SEC);
+        std::mutex m;
 
-    registry.each<PositionComponent>([&](std::shared_ptr<ecs::Entity> entity,
-        PositionComponent* pc)
-    {
-         std::cout << "Entity Id " << entity->getEntityId() << ": " << pc->x << ", " << pc->y << "("<< 1 << ")" << "\n";
-    });
+        registry.each<PositionComponent>([&](std::shared_ptr<ecs::Entity> entity,
+            PositionComponent* pc)
+        {
+            std::lock_guard lock(m);
+            pc->y = 10;
+            std::cout << "Entity " << entity->getEntityId() << "\n";
+        });
+        start = clock();
+        std::cout << "Time " << cpuTime << "\n";
+    }
+
+    // registry.each<PositionComponent>([&](std::shared_ptr<ecs::Entity> entity,
+    //     PositionComponent* pc)
+    // {
+    //      std::cout << "Entity Id " << entity->getEntityId() << ": " << pc->x << ", " << pc->y << "("<< 1 << ")" << "\n";
+    // });
     
     // registry.each<PositionComponent, PlayerTag>([&](std::shared_ptr<ecs::Entity> entity,
     //     std::shared_ptr<PositionComponent> pc, std::shared_ptr<PlayerTag> pt)
@@ -77,6 +87,6 @@ int main()
     // {
     //      std::cout << "Entity Id " << entity->getEntityId() << ": " << pc->x << ", " << pc->y << "("<< pc.use_count() << ")" << "\n";
     // });
-    std::cout << "Halo";
+    // std::cout << "Halo";
 
 }

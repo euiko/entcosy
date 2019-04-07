@@ -18,7 +18,7 @@ namespace ecs
 
             ~ComponentContainer()
             {
-                std::cout << "Desctruction Component " << T::__ecs_type_reg.getIndex() << "\n";   
+                // std::cout << "Desctruction Component " << T::__ecs_type_reg.getIndex() << "\n";   
             }
 
         };
