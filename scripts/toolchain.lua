@@ -504,8 +504,8 @@ function toolchain(_buildDir, _libDir)
 	flags {
 		"NoPCH",
 		"NativeWChar",
-		-- "NoRTTI",
-		-- "NoExceptions",
+		"NoRTTI",
+		"NoExceptions",
 		"NoEditAndContinue",
 		"NoFramePointer",
 		"Symbols",

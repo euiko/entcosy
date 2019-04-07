@@ -9,8 +9,8 @@ project "ecs"
         -- "ECS_NO_RTTI",
         "ENTRY_CONFIG_USE_SDL=1",
         "SDL_VIDEO_DRIVER_X11=1",
-        "USE_INTEL_PSTL",
-        "DISABLE_RTTI=-fno-rtti -fno-exceptions"
+        -- "USE_INTEL_PSTL",
+        -- "DISABLE_RTTI=-fno-rtti -fno-exceptions"
     }
 
     ECS_SRC_DIR = path.join(PROJECT_DIR, "src") 

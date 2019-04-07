@@ -58,14 +58,10 @@ int main()
     {
         end = clock();
         cpuTime =  (end - start) / (CLOCKS_PER_SEC);
-        std::mutex m;
-
         registry.each<PositionComponent>([&](std::shared_ptr<ecs::Entity> entity,
             PositionComponent* pc)
         {
-            std::lock_guard lock(m);
             pc->y = 10;
-            std::cout << "Entity " << entity->getEntityId() << "\n";
         });
         start = clock();
         std::cout << "Time " << cpuTime << "\n";

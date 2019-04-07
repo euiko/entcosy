@@ -11,7 +11,7 @@
 
     #define std_par hpx::parallel
 
-#else 
+#elif USE_INTEL_PSTL
 
     #include <pstl/execution>
     #include <pstl/numeric>
@@ -19,7 +19,17 @@
 
     #define std_par std
 
+#else
+
+    // Use the standard library implementation
+    // #include <execution>
+    #include <numeric>
+    #include <algorithm>
+
+    #define std_par std
+
 #endif
+
 
 #include <vector>
 #include <functional>
@@ -90,7 +100,8 @@ namespace ecs
         // View<Types...> view = each<Types...>();
 
         // std::mutex m;
-        std_par::for_each(std_par::execution::par, m_entities.begin(), m_entities.end(), [&](auto entity)
+        // std_par::for_each(std_par::execution::par, m_entities.begin(), m_entities.end(), [&](auto entity)
+        std::for_each(m_entities.begin(), m_entities.end(), [&](auto entity)
         {
             // std::lock_guard<std::mutex> guard(m);
             if(entity->template has<Types...>())
