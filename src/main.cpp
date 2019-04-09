@@ -18,71 +18,91 @@ struct PositionComponent
 {
     ECS_DECLARE_TYPE;
     int x, y;
-    PositionComponent(int x, int y) : x(x), y(y)
-    {
-        
-    }
+};
+
+struct VelocityComponent
+{
+    ECS_DECLARE_TYPE;
+    int x, y;
 };
 ECS_DEFINE_TYPE(PlayerTag);
 ECS_DEFINE_TYPE(EnemyTag);
 ECS_DEFINE_TYPE(PositionComponent);
+ECS_DEFINE_TYPE(VelocityComponent);
 
-// ecs::TypeIndex ecs::core::TypeRegistry::nextIndex = 1;
-// ecs::core::TypeRegistry ecs::Entity::__ecs_type_reg;
+
+struct Timer final {
+    Timer(): start{std::chrono::system_clock::now()} {}
+
+    void elapsed() {
+        auto now = std::chrono::system_clock::now();
+        std::cout << std::chrono::duration<double>(now - start).count() << " seconds" << std::endl;
+    }
+
+private:
+    std::chrono::time_point<std::chrono::system_clock> start;
+};
+
+
+
 int main()
 {
     ecs::Registry registry;
-    // std::vector<ecs::Entity> entities;
-    for(int i = 0; i < 999999; i++)
+    Timer timer;
+    for(int i = 0; i < 999; i++)
     {
         std::shared_ptr<ecs::Entity> entity = registry.create();
-        entity->assign<PositionComponent>(rand()%10, 1);
-        // entity.assign<PositionComponent>(rand()%10, rand()%20);
-        // entities.push_back(entity);
+        entity->assign<PositionComponent>(1, 1);
+        entity->assign<VelocityComponent>(1, 1);
     }
-    { 
-        std::shared_ptr<ecs::Entity> entity = registry.create();
-        entity->assign<PositionComponent>(rand()%10, 1);
-        entity->assign<PlayerTag>();
-    }
+    timer.elapsed();
+    std::unordered_map<int, std::vector<int>> map;
+    int last = 0;
+    for(size_t key = 0; key < 10; key++)
     {
-        std::shared_ptr<ecs::Entity> entity = registry.create();
-        entity->assign<PositionComponent>(rand()%10, 1);
-        entity->assign<EnemyTag>();
-    }
-    // std::cout << "Halo";
-    double start = clock();
-    double end;
-    double cpuTime;
-    while (1)
-    {
-        end = clock();
-        cpuTime =  (end - start) / (CLOCKS_PER_SEC);
-        registry.each<PositionComponent>([&](std::shared_ptr<ecs::Entity> entity,
-            PositionComponent* pc)
+        std::vector<int> v;
+        for(int val = last; val < last+5; val++)
         {
-            pc->y = 10;
-        });
-        start = clock();
-        std::cout << "Time " << cpuTime << "\n";
+            v.push_back(val);
+        }
+        map.insert({key, v});
+        last++;
     }
 
-    // registry.each<PositionComponent>([&](std::shared_ptr<ecs::Entity> entity,
-    //     PositionComponent* pc)
-    // {
-    //      std::cout << "Entity Id " << entity->getEntityId() << ": " << pc->x << ", " << pc->y << "("<< 1 << ")" << "\n";
-    // });
+    for(auto& kv : map)
+    {
+        std::cout << "Key " << kv.first << " : ";
+        for(auto& value: kv.second)
+        {
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
     
-    // registry.each<PositionComponent, PlayerTag>([&](std::shared_ptr<ecs::Entity> entity,
-    //     std::shared_ptr<PositionComponent> pc, std::shared_ptr<PlayerTag> pt)
-    // {
-    //      std::cout << "Entity Id " << entity->getEntityId() << ": " << pc->x << ", " << pc->y << "("<< pc.use_count() << ")" << "\n";
-    // });
-    // registry.each<PositionComponent, EnemyTag>([&](std::shared_ptr<ecs::Entity> entity,
-    //     std::shared_ptr<PositionComponent> pc, std::shared_ptr<EnemyTag> et)
-    // {
-    //      std::cout << "Entity Id " << entity->getEntityId() << ": " << pc->x << ", " << pc->y << "("<< pc.use_count() << ")" << "\n";
-    // });
-    // std::cout << "Halo";
+    std::cout << "Remove..." << std::endl;
+    for(auto& kv : map)
+    {
+        std::cout << "Key " << kv.first << " : ";
+        auto begin = std::remove(kv.second.begin(), kv.second.end(), 5);
+        auto end = kv.second.end();
+        for(auto i = begin; i != end; i++)
+        {
+            std::cout << *i << " ";
+        }
+        std::cout << std::endl;
+        // end--;
+        // end--;
+        kv.second.erase(end, end);
+        std::cout << "\tProcessing..." << std::endl;
+        std::cout << "\t";
+        for(auto& v : kv.second)
+        {
+            std::cout << v << " ";
+        }
+        std::cout << "\n";
+    }
 
+    return 0;
 }

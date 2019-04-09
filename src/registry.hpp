@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <mutex>
 
+#include "event_subscriber.hpp"
 #include "entity.hpp"
 
 namespace ecs
@@ -73,11 +74,60 @@ namespace ecs
             return m_entities[index];
         }
 
+        template <typename T>
+        void subscribe(EventSubscriber<T> *subscriber)
+        {
+            TypeIndex typeId = getTypeIndex<T>();
+            auto found = m_events.find(typeId);
+            if(found == m_events.end()) // There is no event
+            {
+                std::vector<core::BaseEventSubscriber*> subcriberList;
+                subcriberList.push_back(subscriber);
+                m_events.insert({ typeId, subcriberList });
+            } else
+            {
+                found->second.push_back(reinterpret_cast<core::BaseEventSubscriber*>(subscriber));
+            }
+        }
+        
+        template <typename T>
+        void unsubscribe(EventSubscriber<T> *subscriber)
+        {
+            TypeIndex typeId = getTypeIndex<T>();
+            auto found = m_events.find(typeId);
+            if(found != m_events.end()) // There is event
+            {
+                
+                found->second.erase(std::remove(found->second.begin(), found->second.end(), subscriber));
+                if(found->second.size() <= 0)
+                {
+                    m_events.erase(found);
+                }
+            }
+        }
+
+        template <typename T>        
+        void emit(const T &event)
+        {
+            TypeIndex typeId = getTypeIndex<T>();
+            auto found = m_events.find(typeId);
+            if(found != m_events.end())
+            {
+                for(auto *bSubscriber: found->second)
+                {
+                    EventSubscriber<T> *subscriber = reinterpret_cast<EventSubscriber<T>*>(bSubscriber);
+                    subscriber->receive(event); 
+                }
+            }
+        }
+
+
         void update(float delta_time);
 
     private:
         std::vector<std::shared_ptr<Entity>> m_entities;
         std::vector<std::shared_ptr<System>> m_systems;
+        std::unordered_map<TypeIndex, std::vector<core::BaseEventSubscriber*>> m_events;
     };
 } // ecs
 

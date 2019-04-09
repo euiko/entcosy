@@ -2,12 +2,16 @@
 #define ECS_BASE_COMPONENTCONTAINER_HPP
 
 #include <iostream>
-#include "base_component_container.hpp"
 
 namespace ecs
 {
     namespace core
     {
+        struct BaseComponentContainer
+        {
+            virtual ~BaseComponentContainer() {}
+        }; 
+        
         template<typename T>
         struct ComponentContainer : public BaseComponentContainer
         {
