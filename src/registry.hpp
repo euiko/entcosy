@@ -133,6 +133,9 @@ namespace ecs
             }
         }
 
+        void registerSystem(std::shared_ptr<System> system);
+
+        void unregisterSystem(std::shared_ptr<System> system);
 
         void update(float delta_time);
 
@@ -177,6 +180,18 @@ namespace ecs
         {
             system->update(this, delta_time);
         });
+    }
+
+    void Registry::registerSystem(std::shared_ptr<System> system)
+    {
+        m_systems.push_back(system);
+        system->configure(this);
+    }
+
+    void Registry::unregisterSystem(std::shared_ptr<System> system)
+    {
+        m_systems.erase( std::remove(m_systems.begin(), m_systems.end(), system), m_systems.end());
+        system->unconfigure(this);
     }
 } // ecs
 

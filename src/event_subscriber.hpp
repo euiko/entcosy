@@ -6,6 +6,7 @@
 
 namespace ecs
 {
+    class Registry;
     template <typename T>
     class EventSubscriber : core::BaseEventSubscriber
     {
