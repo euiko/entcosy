@@ -106,6 +106,18 @@ namespace ecs
             }
         }
 
+        void unsubscribeAll(core::BaseEventSubscriber *subscriber)
+        {
+            for(auto &kv : m_events)
+            {
+                kv.second.erase(std::remove(kv.second.begin(), kv.second.end(), subscriber));
+                if(kv.second.size() <= 0)
+                {
+                    m_events.erase(kv.first);
+                }
+            }
+        }
+
         template <typename T>        
         void emit(const T &event)
         {
