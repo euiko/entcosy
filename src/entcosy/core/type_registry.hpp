@@ -3,9 +3,8 @@
 
 #include <cinttypes>
 
-
-#define ENTCOSY_DECLARE_TYPE public: static ecs::core::TypeRegistry __ENTCOSY_type_reg
-#define ENTCOSY_DEFINE_TYPE(name) ecs::core::TypeRegistry name::__ENTCOSY_type_reg
+#define ENTCOSY_DECLARE_TYPE public: static entcosy::core::TypeRegistry __ENTCOSY_type_reg
+#define ENTCOSY_DEFINE_TYPE(name) entcosy::core::TypeRegistry name::__ENTCOSY_type_reg
 
 namespace entcosy
 {

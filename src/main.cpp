@@ -2,7 +2,7 @@
 #include <vector>
 #include <deque>
 #include <ctime>
-#include "registry.hpp"
+#include "entcosy/registry.hpp"
 
 struct PlayerTag
 {
@@ -47,11 +47,11 @@ private:
 
 int main()
 {
-    ecs::Registry registry;
+    entcosy::Registry registry;
     Timer timer;
     for(int i = 0; i < 999; i++)
     {
-        std::shared_ptr<ecs::Entity> entity = registry.create();
+        std::shared_ptr<entcosy::Entity> entity = registry.create();
         entity->assign<PositionComponent>(1, 1);
         entity->assign<VelocityComponent>(1, 1);
     }
