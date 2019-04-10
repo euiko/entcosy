@@ -117,7 +117,7 @@ namespace entcosy
             }
         }
 
-        void unsubscribeAll(core::BaseEventSubscriber *subscriber)
+        void unsubscribeAll(void *subscriber)
         {
             for(auto &kv : m_events)
             {

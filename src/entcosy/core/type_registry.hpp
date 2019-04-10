@@ -3,6 +3,15 @@
 
 #include <cinttypes>
 
+namespace entcosy
+{
+    namespace core
+    {
+        class TypeRegistry; // Forward declaration to fix numerous error due to incomplete class definition
+    } // core
+} // entcosy
+
+
 #define ENTCOSY_DECLARE_TYPE public: static entcosy::core::TypeRegistry __ENTCOSY_type_reg
 #define ENTCOSY_DEFINE_TYPE(name) entcosy::core::TypeRegistry name::__ENTCOSY_type_reg
 

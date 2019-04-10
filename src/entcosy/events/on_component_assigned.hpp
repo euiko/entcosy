@@ -14,7 +14,7 @@ namespace entcosy
         {
             ENTCOSY_DECLARE_TYPE;
 
-            std::shared_ptr<Entity> entity;
+            std::shared_ptr<entcosy::Entity> entity;
             T* component;
         };
 
