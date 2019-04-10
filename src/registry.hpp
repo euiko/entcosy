@@ -152,7 +152,7 @@ namespace ecs
 namespace ecs
 {
     template<typename... Types>
-    inline View<Types...> Registry::each()
+    View<Types...> Registry::each()
     {
         core::EntityComponentIterator<Types...> first(this, 0, false);
         core::EntityComponentIterator<Types...> last(this, getCount(), true);
@@ -162,16 +162,11 @@ namespace ecs
     template<typename... Types>
     void Registry::each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback)
     {
-        // View<Types...> view = each<Types...>();
-
-        // std::mutex m;
-        // std_par::for_each(std_par::execution::par, m_entities.begin(), m_entities.end(), [&](auto entity)
-        std::for_each(m_entities.begin(), m_entities.end(), [&](auto entity)
+        View<Types...> view = each<Types...>();
+        std::for_each(view.begin(), view.end(), [&](auto entity)
         {
-            // std::lock_guard<std::mutex> guard(m);
-            if(entity->template has<Types...>())
-                callback(entity, entity->template get<Types>()...);
-        } );
+            callback(entity, entity->template get<Types>()...);
+        });
     }
 
     void Registry::update(float delta_time)
