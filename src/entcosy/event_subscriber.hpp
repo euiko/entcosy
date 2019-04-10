@@ -11,7 +11,7 @@ namespace entcosy
     class EventSubscriber : core::BaseEventSubscriber
     {
     public:
-        virtual void receive(Registry &registry, const T &event) { }
+        virtual void receive(Registry *registry, const T &event) { }
     };
 } // ecs
 

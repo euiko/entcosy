@@ -37,7 +37,8 @@
 #include <mutex>
 
 #include "event_subscriber.hpp"
-#include "entity.hpp"
+#include "events/on_entity_destroyed.hpp"
+#include "events/on_entity_created.hpp"
 
 namespace entcosy
 {
@@ -45,7 +46,7 @@ namespace entcosy
     class System;
     template<typename ...Types>
     class View;
-
+    class Entity;
     class Registry
     {
     public:
@@ -53,7 +54,17 @@ namespace entcosy
         {
             std::shared_ptr<Entity> entity = std::make_shared<Entity>();
             m_entities.push_back(entity);
+            emit<events::OnEntityCreated>({ entity });
             return entity;
+        }
+
+        void destroy(std::shared_ptr<Entity> entity)
+        {
+            if(entity.get() == nullptr)
+                return;
+            
+            emit<events::OnEntityDestroyed>({ entity });
+            m_entities.erase(std::remove(m_entities.begin(), m_entities.begin(), entity), m_entities.end());
         }
 
         template<typename... Types>
@@ -128,7 +139,7 @@ namespace entcosy
                 for(auto *bSubscriber: found->second)
                 {
                     EventSubscriber<T> *subscriber = reinterpret_cast<EventSubscriber<T>*>(bSubscriber);
-                    subscriber->receive(event); 
+                    subscriber->receive(this, event); 
                 }
             }
         }
@@ -148,6 +159,7 @@ namespace entcosy
 
 #include "view.hpp"
 #include "system.hpp"
+#include "entity.hpp"
 
 namespace entcosy
 {
