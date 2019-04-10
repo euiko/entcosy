@@ -1,9 +1,9 @@
-#ifndef ECS_SYSTEM_HPP
-#define ECS_SYSTEM_HPP
+#ifndef ENTCOSY_SYSTEM_HPP
+#define ENTCOSY_SYSTEM_HPP
 
 #include "registry.hpp"
 
-namespace ecs
+namespace entcosy
 {
     class System
     {

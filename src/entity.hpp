@@ -1,5 +1,5 @@
-#ifndef ECS_ENTITY_HPP
-#define ECS_ENTITY_HPP
+#ifndef ENTCOSY_ENTITY_HPP
+#define ENTCOSY_ENTITY_HPP
 
 #include <iostream>
 #include <unordered_map>
@@ -7,7 +7,7 @@
 #include "core/component_container.hpp"
 #include "core/type_registry.hpp"
 
-namespace ecs
+namespace entcosy
 {
     class Entity
     {

@@ -6,25 +6,25 @@ project "ecs"
   	language "C++"
     kind     "ConsoleApp"
     defines {
-        -- "ECS_NO_RTTI",
+        -- "ENTCOSY_NO_RTTI",
         "ENTRY_CONFIG_USE_SDL=1",
         "SDL_VIDEO_DRIVER_X11=1",
         -- "USE_INTEL_PSTL",
         -- "DISABLE_RTTI=-fno-rtti -fno-exceptions"
     }
 
-    ECS_SRC_DIR = path.join(PROJECT_DIR, "src") 
-    ECS_INC_DIR = path.join(PROJECT_DIR, "include") 
+    ENTCOSY_SRC_DIR = path.join(PROJECT_DIR, "src") 
+    ENTCOSY_INC_DIR = path.join(PROJECT_DIR, "include") 
 
     includedirs {
         "/usr/include",
-        ECS_INC_DIR,
-        ECS_SRC_DIR,
+        ENTCOSY_INC_DIR,
+        ENTCOSY_SRC_DIR,
         PSTL_INC_DIR,
     }
     
     files {
-        path.join(ECS_SRC_DIR, "**"),
+        path.join(ENTCOSY_SRC_DIR, "**"),
         -- path.join(PROJECT_DIR, "include/**.h"),
     }
     links {

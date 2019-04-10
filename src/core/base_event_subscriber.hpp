@@ -1,7 +1,7 @@
 #ifndef ENTCOSY_CORE_BASEEVENTSUBSCRIBER_HPP
 #define ENTCOSY_CORE_BASEEVENTSUBSCRIBER_HPP
 
-namespace ecs
+namespace entcosy
 {
     namespace core
     {
@@ -11,7 +11,7 @@ namespace ecs
             BaseEventSubscriber() { }
         };
     } // core
-} // ecs
+} // entcosy
 
 
 #endif

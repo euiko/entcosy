@@ -1,12 +1,12 @@
-#ifndef ECS_CORE_ENTITYCOMPONENTITERATOR_HPP
-#define ECS_CORE_ENTITYCOMPONENTITERATOR_HPP
+#ifndef ENTCOSY_CORE_ENTITYCOMPONENTITERATOR_HPP
+#define ENTCOSY_CORE_ENTITYCOMPONENTITERATOR_HPP
 
 #include <cstdint>
 #include <memory>
 #include "../registry.hpp"
 #include "../entity.hpp"
 
-namespace ecs
+namespace entcosy
 {
     namespace core
     {

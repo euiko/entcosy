@@ -1,9 +1,9 @@
-#ifndef ECS_BASE_COMPONENTCONTAINER_HPP
-#define ECS_BASE_COMPONENTCONTAINER_HPP
+#ifndef ENTCOSY_BASE_COMPONENTCONTAINER_HPP
+#define ENTCOSY_BASE_COMPONENTCONTAINER_HPP
 
 #include <iostream>
 
-namespace ecs
+namespace entcosy
 {
     namespace core
     {
@@ -22,7 +22,7 @@ namespace ecs
 
             ~ComponentContainer()
             {
-                // std::cout << "Desctruction Component " << T::__ecs_type_reg.getIndex() << "\n";   
+                // std::cout << "Desctruction Component " << T::__ENTCOSY_type_reg.getIndex() << "\n";   
             }
 
         };

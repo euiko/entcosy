@@ -1,20 +1,20 @@
-#ifndef ECS_CORE_TYPEREGISTRY_HPP
-#define ECS_CORE_TYPEREGISTRY_HPP
+#ifndef ENTCOSY_CORE_TYPEREGISTRY_HPP
+#define ENTCOSY_CORE_TYPEREGISTRY_HPP
 
 #include <cinttypes>
 
 
-#define ECS_DECLARE_TYPE public: static ecs::core::TypeRegistry __ecs_type_reg
-#define ECS_DEFINE_TYPE(name) ecs::core::TypeRegistry name::__ecs_type_reg
+#define ENTCOSY_DECLARE_TYPE public: static ecs::core::TypeRegistry __ENTCOSY_type_reg
+#define ENTCOSY_DEFINE_TYPE(name) ecs::core::TypeRegistry name::__ENTCOSY_type_reg
 
-namespace ecs
+namespace entcosy
 {
     typedef uint32_t TypeIndex;
 
 	template<typename T>
 	TypeIndex getTypeIndex()
 	{
-		return T::__ecs_type_reg.getIndex();
+		return T::__ENTCOSY_type_reg.getIndex();
     }
 
     namespace core

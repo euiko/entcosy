@@ -4,7 +4,7 @@
 #include "registry.hpp"
 #include "core/base_event_subscriber.hpp"
 
-namespace ecs
+namespace entcosy
 {
     class Registry;
     template <typename T>

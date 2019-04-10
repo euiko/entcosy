@@ -32,7 +32,7 @@ sdl2 = dependency(nil, "SDL2")
             "HAVE_STDIO_H=1",
         }
     
-    SDL2_DIR = path.join(ECS_3RDPARTY_DIR, "sdl2")
+    SDL2_DIR = path.join(ENTCOSY_3RDPARTY_DIR, "sdl2")
     SDL2_INC_DIR = path.join(SDL2_DIR, "include")
 	
 	-- defaultConfigurations()

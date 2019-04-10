@@ -1,5 +1,5 @@
-#ifndef ECS_REGISTRY_HPP
-#define ECS_REGISTRY_HPP
+#ifndef ENTCOSY_REGISTRY_HPP
+#define ENTCOSY_REGISTRY_HPP
 
 #ifdef USE_HPX
 
@@ -39,7 +39,7 @@
 #include "event_subscriber.hpp"
 #include "entity.hpp"
 
-namespace ecs
+namespace entcosy
 {
 
     class System;
@@ -149,7 +149,7 @@ namespace ecs
 #include "view.hpp"
 #include "system.hpp"
 
-namespace ecs
+namespace entcosy
 {
     template<typename... Types>
     View<Types...> Registry::each()

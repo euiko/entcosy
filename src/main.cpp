@@ -6,29 +6,29 @@
 
 struct PlayerTag
 {
-    ECS_DECLARE_TYPE;
+    ENTCOSY_DECLARE_TYPE;
 };
 
 struct EnemyTag
 {
-    ECS_DECLARE_TYPE;
+    ENTCOSY_DECLARE_TYPE;
 };
 
 struct PositionComponent
 {
-    ECS_DECLARE_TYPE;
+    ENTCOSY_DECLARE_TYPE;
     int x, y;
 };
 
 struct VelocityComponent
 {
-    ECS_DECLARE_TYPE;
+    ENTCOSY_DECLARE_TYPE;
     int x, y;
 };
-ECS_DEFINE_TYPE(PlayerTag);
-ECS_DEFINE_TYPE(EnemyTag);
-ECS_DEFINE_TYPE(PositionComponent);
-ECS_DEFINE_TYPE(VelocityComponent);
+ENTCOSY_DEFINE_TYPE(PlayerTag);
+ENTCOSY_DEFINE_TYPE(EnemyTag);
+ENTCOSY_DEFINE_TYPE(PositionComponent);
+ENTCOSY_DEFINE_TYPE(VelocityComponent);
 
 
 struct Timer final {

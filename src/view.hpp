@@ -1,9 +1,9 @@
-#ifndef ECS_VIEW_HPP
-#define ECS_VIEW_HPP
+#ifndef ENTCOSY_VIEW_HPP
+#define ENTCOSY_VIEW_HPP
 
 #include "core/entity_component_iterator.hpp"
 
-namespace ecs
+namespace entcosy
 {
     template<typename ...Types>
     class View
