@@ -24,5 +24,5 @@ toolchain(BUILD_DIR, ENTCOSY_3RDPARTY_DIR)
 dofile "utils/module.lua"
 
 group "bin"
-dofile "ecs.lua"
+dofile "tests.lua"
 

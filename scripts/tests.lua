@@ -2,7 +2,7 @@ group "3rdparty"
 dofile "3rdparty/sdl2.lua"
 dofile "3rdparty/pstl.lua"
 
-project "ecs"
+project "entcosy_tests"
   	language "C++"
     kind     "ConsoleApp"
     defines {
