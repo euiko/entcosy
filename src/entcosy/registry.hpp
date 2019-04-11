@@ -118,23 +118,9 @@ namespace entcosy
             }
         }
 
-        std::shared_ptr<Entity> create()
-        {
-            std::shared_ptr<Entity> entity = std::make_shared<Entity>(this);
-            m_entities.push_back(entity);
-            events::OnEntityCreated event = {entity};
-            emit<events::OnEntityCreated>({ entity });
-            return entity;
-        }
+        std::shared_ptr<Entity> create();
 
-        void destroy(std::shared_ptr<Entity> entity)
-        {
-            if(entity.get() == nullptr)
-                return;
-            
-            emit<events::OnEntityDestroyed>({ entity });
-            m_entities.erase(std::remove(m_entities.begin(), m_entities.begin(), entity), m_entities.end());
-        }
+        void destroy(std::shared_ptr<Entity> entity);
 
         template<typename... Types>
         void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback);
@@ -175,6 +161,25 @@ namespace entcosy
 
 namespace entcosy
 {
+
+    std::shared_ptr<Entity> Registry::create()
+    {
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(this);
+        m_entities.push_back(entity);
+        // events::OnEntityCreated event = {entity};
+        emit<events::OnEntityCreated>({ entity });
+        return entity;
+    }
+
+    void Registry::destroy(std::shared_ptr<Entity> entity)
+    {
+        if(entity.get() == nullptr)
+            return;
+        
+        emit<events::OnEntityDestroyed>({ entity });
+        m_entities.erase(std::remove(m_entities.begin(), m_entities.begin(), entity), m_entities.end());
+    }
+
     template<typename... Types>
     View<Types...> Registry::each()
     {

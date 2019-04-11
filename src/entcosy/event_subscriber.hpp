@@ -8,7 +8,7 @@ namespace entcosy
 {
     class Registry;
     template <typename T>
-    class EventSubscriber : core::BaseEventSubscriber
+    class EventSubscriber : public core::BaseEventSubscriber
     {
     public:
         virtual void receive(Registry *registry, const T &event) { }
