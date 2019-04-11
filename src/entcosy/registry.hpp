@@ -35,56 +35,30 @@
 #include <functional>
 #include <algorithm>
 #include <mutex>
+#include <unordered_map>
+#include <memory>
 
+#include "core/type_registry.hpp"
 #include "event_subscriber.hpp"
-#include "events/on_entity_destroyed.hpp"
-#include "events/on_entity_created.hpp"
 
 namespace entcosy
 {
-
+    // BEGIN FORWARD
     class System;
     template<typename ...Types>
     class View;
     class Entity;
+    namespace events
+    {
+        struct OnEntityCreated;
+        struct OnEntityDestroyed;
+    } // events
+    // END FORWARD
+
+
     class Registry
     {
     public:
-        std::shared_ptr<Entity> create()
-        {
-            std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-            m_entities.push_back(entity);
-            emit<events::OnEntityCreated>({ entity });
-            return entity;
-        }
-
-        void destroy(std::shared_ptr<Entity> entity)
-        {
-            if(entity.get() == nullptr)
-                return;
-            
-            emit<events::OnEntityDestroyed>({ entity });
-            m_entities.erase(std::remove(m_entities.begin(), m_entities.begin(), entity), m_entities.end());
-        }
-
-        template<typename... Types>
-        void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback);
-
-        template<typename... Types>
-        View<Types...> each();
-
-        size_t getCount() const
-        {
-            return m_entities.size();
-        }
-
-        std::shared_ptr<Entity> getByIndex(size_t index)
-        {
-            if(index >= getCount())
-                return nullptr;
-            return m_entities[index];
-        }
-
         template <typename T>
         void subscribe(EventSubscriber<T> *subscriber)
         {
@@ -129,8 +103,8 @@ namespace entcosy
             }
         }
 
-        template <typename T>        
-        void emit(const T &event)
+        template<typename T>        
+        void emit(const T& event)
         {
             TypeIndex typeId = getTypeIndex<T>();
             auto found = m_events.find(typeId);
@@ -142,6 +116,42 @@ namespace entcosy
                     subscriber->receive(this, event); 
                 }
             }
+        }
+
+        std::shared_ptr<Entity> create()
+        {
+            std::shared_ptr<Entity> entity = std::make_shared<Entity>(this);
+            m_entities.push_back(entity);
+            events::OnEntityCreated event = {entity};
+            emit<events::OnEntityCreated>({ entity });
+            return entity;
+        }
+
+        void destroy(std::shared_ptr<Entity> entity)
+        {
+            if(entity.get() == nullptr)
+                return;
+            
+            emit<events::OnEntityDestroyed>({ entity });
+            m_entities.erase(std::remove(m_entities.begin(), m_entities.begin(), entity), m_entities.end());
+        }
+
+        template<typename... Types>
+        void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback);
+
+        template<typename... Types>
+        View<Types...> each();
+
+        size_t getCount() const
+        {
+            return m_entities.size();
+        }
+
+        std::shared_ptr<Entity> getByIndex(size_t index)
+        {
+            if(index >= getCount())
+                return nullptr;
+            return m_entities[index];
         }
 
         void registerSystem(std::shared_ptr<System> system);
@@ -160,6 +170,8 @@ namespace entcosy
 #include "view.hpp"
 #include "system.hpp"
 #include "entity.hpp"
+#include "events/on_entity_destroyed.hpp"
+#include "events/on_entity_created.hpp"
 
 namespace entcosy
 {
