@@ -1,5 +1,5 @@
-#ifndef ENTCOSY_EVENT_SUBSCRIBER_HPP
-#define ENTCOSY_EVENT_SUBSCRIBER_HPP
+#ifndef ENTCOSY_EVENTSUBSCRIBER_HPP
+#define ENTCOSY_EVENTSUBSCRIBER_HPP
 
 #include "registry.hpp"
 #include "core/base_event_subscriber.hpp"

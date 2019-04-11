@@ -15,7 +15,6 @@ namespace entcosy
             std::shared_ptr<Entity> entity;
         };
 
-        ENTCOSY_DEFINE_TYPE(OnEntityDestroyed);
     } // events
 } // entcosy
 

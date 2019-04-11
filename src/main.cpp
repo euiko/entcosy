@@ -25,6 +25,8 @@ struct VelocityComponent
     ENTCOSY_DECLARE_TYPE;
     int x, y;
 };
+
+ENTCOSY_INITIALIZATION;
 ENTCOSY_DEFINE_TYPE(PlayerTag);
 ENTCOSY_DEFINE_TYPE(EnemyTag);
 ENTCOSY_DEFINE_TYPE(PositionComponent);

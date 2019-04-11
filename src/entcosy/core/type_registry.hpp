@@ -15,6 +15,14 @@ namespace entcosy
 #define ENTCOSY_DECLARE_TYPE public: static entcosy::core::TypeRegistry __ENTCOSY_type_reg
 #define ENTCOSY_DEFINE_TYPE(name) entcosy::core::TypeRegistry name::__ENTCOSY_type_reg
 
+#define ENTCOSY_INITIALIZATION \
+	entcosy::TypeIndex entcosy::core::TypeRegistry::nextIndex = 1; \
+	\
+	ENTCOSY_DEFINE_TYPE(entcosy::events::OnEntityCreated);\
+	ENTCOSY_DEFINE_TYPE(entcosy::events::OnEntityDestroyed); 
+
+
+
 namespace entcosy
 {
     typedef uint32_t TypeIndex;
@@ -46,7 +54,7 @@ namespace entcosy
             TypeIndex m_index;
         };
 
-        TypeIndex TypeRegistry::nextIndex = 1;
+        // TypeIndex TypeRegistry::nextIndex = 1;
     } // core
 } // ecs
 

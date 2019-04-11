@@ -162,7 +162,7 @@ namespace entcosy
 namespace entcosy
 {
 
-    std::shared_ptr<Entity> Registry::create()
+    inline std::shared_ptr<Entity> Registry::create()
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(this);
         m_entities.push_back(entity);
@@ -171,7 +171,7 @@ namespace entcosy
         return entity;
     }
 
-    void Registry::destroy(std::shared_ptr<Entity> entity)
+    inline void Registry::destroy(std::shared_ptr<Entity> entity)
     {
         if(entity.get() == nullptr)
             return;
@@ -181,7 +181,7 @@ namespace entcosy
     }
 
     template<typename... Types>
-    View<Types...> Registry::each()
+    inline View<Types...> Registry::each()
     {
         core::EntityComponentIterator<Types...> first(this, 0, false);
         core::EntityComponentIterator<Types...> last(this, getCount(), true);
@@ -189,7 +189,7 @@ namespace entcosy
     }
 
     template<typename... Types>
-    void Registry::each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback)
+    inline void Registry::each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback)
     {
         View<Types...> view = each<Types...>();
         std::for_each(view.begin(), view.end(), [&](auto entity)
@@ -198,7 +198,7 @@ namespace entcosy
         });
     }
 
-    void Registry::update(float delta_time)
+    inline void Registry::update(float delta_time)
     {
         std::for_each(m_systems.begin(), m_systems.end(), [&](auto system)
         {
@@ -206,13 +206,13 @@ namespace entcosy
         });
     }
 
-    void Registry::registerSystem(std::shared_ptr<System> system)
+    inline void Registry::registerSystem(std::shared_ptr<System> system)
     {
         m_systems.push_back(system);
         system->configure(this);
     }
 
-    void Registry::unregisterSystem(std::shared_ptr<System> system)
+    inline void Registry::unregisterSystem(std::shared_ptr<System> system)
     {
         m_systems.erase( std::remove(m_systems.begin(), m_systems.end(), system), m_systems.end());
         system->unconfigure(this);
