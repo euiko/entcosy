@@ -1,3 +1,6 @@
 [submodule "3rdparty/pstl"]
 	path = 3rdparty/pstl
 	url = https://github.com/intel/parallelstl.git
+[submodule "3rdparty/cereal"]
+	path = 3rdparty/cereal
+	url = https://github.com/USCiLab/cereal.git
