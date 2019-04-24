@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <memory>
 // #include <cereal/archives/binary.hpp>
-#include "config.hpp"
 #include "events/on_component_assigned.hpp"
 #include "events/on_component_removed.hpp"
 #include "core/component_container.hpp"
@@ -88,15 +87,6 @@ namespace entcosy
         {
             TypeIndex typeId = getTypeIndex<T>();
             return m_components.find(typeId) != m_components.end();
-        }
-
-        ~Entity()
-        {
-            Config config = Config::get();
-            if(config.isEnabled(ENTCOSY_DEBUG))
-            {
-                std::cout << "Entity with id " << m_id << "destroyed";
-            }
         }
 
     private:

@@ -5,7 +5,7 @@ solution "ENTCOSY_sln"
 		"Release",
 	}
 	platforms {
-		"native",
+		"x64",
 	}
 
 	language "C++"
