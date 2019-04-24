@@ -505,7 +505,7 @@ function toolchain(_buildDir, _libDir)
 		"NoPCH",
 		"NativeWChar",
 		"NoRTTI",
-		"NoExceptions",
+		-- "NoExceptions",
 		"NoEditAndContinue",
 		"NoFramePointer",
 		"Symbols",

@@ -1,6 +1,6 @@
 group "3rdparty"
-dofile "3rdparty/sdl2.lua"
-dofile "3rdparty/pstl.lua"
+dofile "3rdparty/cereal.lua"
+-- dofile "3rdparty/pstl.lua"
 
 project "entcosy_tests"
   	language "C++"
@@ -20,7 +20,8 @@ project "entcosy_tests"
         "/usr/include",
         ENTCOSY_INC_DIR,
         ENTCOSY_SRC_DIR,
-        PSTL_INC_DIR,
+        -- PSTL_INC_DIR,
+        CEREAL_INCLUDE_DIR,
     }
     
     files {
@@ -29,8 +30,8 @@ project "entcosy_tests"
     }
     links {
         -- "xbgi",
-        "SDL2",
-        "pstl",
+        -- "SDL2",
+        -- "pstl",
     }
     
     buildoptions {
@@ -39,16 +40,3 @@ project "entcosy_tests"
         -- "-fno-rtti",
         -- "-fno-exceptions",
     }
-
-    configuration "linux or bsd"
-        linkoptions { "-fPIC" }
-        initX11()
-        links {
-            "GL",
-            "GLU",
-            "glut",
-            "tbb",
-            "EGL",
-            "GLESv2",
-        }
-    
