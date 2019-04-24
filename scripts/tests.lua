@@ -1,6 +1,7 @@
 group "3rdparty"
 dofile "3rdparty/sdl2.lua"
 dofile "3rdparty/pstl.lua"
+dofile "3rdparty/cereal.lua"
 
 project "entcosy_tests"
   	language "C++"
@@ -20,6 +21,7 @@ project "entcosy_tests"
         "/usr/include",
         ENTCOSY_INC_DIR,
         ENTCOSY_SRC_DIR,
+        CEREAL_INCLUDE_DIR,
         PSTL_INC_DIR,
     }
     

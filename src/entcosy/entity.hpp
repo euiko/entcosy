@@ -4,6 +4,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <memory>
+// #include <cereal/archives/binary.hpp>
 #include "config.hpp"
 #include "events/on_component_assigned.hpp"
 #include "events/on_component_removed.hpp"
