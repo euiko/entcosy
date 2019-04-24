@@ -37,6 +37,8 @@
 #include <mutex>
 #include <unordered_map>
 #include <memory>
+#include <cereal/access.hpp>
+#include <cereal/archives/binary.hpp>
 
 #include "core/type_registry.hpp"
 #include "event_subscriber.hpp"
@@ -58,6 +60,7 @@ namespace entcosy
     class Registry
     {
     public:
+        friend class cereal::access;
 
         template <typename T>
         void subscribe(EventSubscriber<T> *subscriber)
@@ -138,6 +141,12 @@ namespace entcosy
             if(index >= getCount())
                 return nullptr;
             return m_entities[index];
+        }
+
+        template <class Archive>
+        void serialize( Archive & ar )
+        {
+            ar( m_entities );
         }
 
         void registerSystem(std::shared_ptr<System> system);

@@ -2,6 +2,7 @@
 #include <vector>
 #include <deque>
 #include <ctime>
+#include <fstream>
 #include "entcosy/registry.hpp"
 
 struct PlayerTag
@@ -51,12 +52,18 @@ int main()
 {
     entcosy::Registry registry;
     Timer timer;
+    std::ofstream os("out.cereal", std::ios::binary);
+    // cereal::BinaryOutputArchive archive( os );
+    // archive( registry );
     for(int i = 0; i < 999; i++)
     {
         std::shared_ptr<entcosy::Entity> entity = registry.create();
         entity->assign<PositionComponent>(1, 1);
         entity->assign<VelocityComponent>(1, 1);
     }
+
+
+
     timer.elapsed();
     std::unordered_map<int, std::vector<int>> map;
     int last = 0;

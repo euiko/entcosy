@@ -4,7 +4,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <memory>
-// #include <cereal/archives/binary.hpp>
+#include <cereal/access.hpp>
+#include <cereal/archives/binary.hpp>
 #include "events/on_component_assigned.hpp"
 #include "events/on_component_removed.hpp"
 #include "core/component_container.hpp"
@@ -16,6 +17,8 @@ namespace entcosy
     class Entity : public std::enable_shared_from_this<Entity>
     {
     public:
+        friend class cereal::access;
+
         Entity(Registry *registry) : m_registry(registry)
         {
             m_id = m_typeRegistry.getIndex();
@@ -87,6 +90,12 @@ namespace entcosy
         {
             TypeIndex typeId = getTypeIndex<T>();
             return m_components.find(typeId) != m_components.end();
+        }
+
+        template <class Archive>
+        void serialize( Archive & ar )
+        {
+            ar( m_components );
         }
 
     private:
