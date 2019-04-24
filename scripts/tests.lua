@@ -1,6 +1,8 @@
 group "3rdparty"
 dofile "3rdparty/cereal.lua"
 -- dofile "3rdparty/pstl.lua"
+-- dofile "3rdparty/sdl2.lua"
+
 
 project "entcosy_tests"
   	language "C++"

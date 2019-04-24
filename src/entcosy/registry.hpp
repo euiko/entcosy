@@ -38,6 +38,7 @@
 #include <unordered_map>
 #include <memory>
 
+#include "config.hpp"
 #include "core/type_registry.hpp"
 #include "event_subscriber.hpp"
 
@@ -55,10 +56,21 @@ namespace entcosy
     } // events
     // END FORWARD
 
-
     class Registry
     {
     public:
+    
+        Registry()
+        {
+            Registry(ENTCOSY_DEBUG);   
+        }
+
+        Registry(uint32_t configs)
+        {
+            Config config = Config::get();
+            config.set(configs);
+        }
+
         template <typename T>
         void subscribe(EventSubscriber<T> *subscriber)
         {

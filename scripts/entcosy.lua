@@ -1,4 +1,5 @@
 group "3rdparty"
+dofile "3rdparty/cereal.lua"
 -- dofile "3rdparty/pstl.lua"
 
 project "entcosy"
@@ -19,6 +20,7 @@ project "entcosy"
         "/usr/include",
         -- ENTCOSY_INC_DIR,
         ENTCOSY_SRC_DIR,
+        CEREAL_INCLUDE_DIR,
         -- PSTL_INC_DIR,
     }
     
