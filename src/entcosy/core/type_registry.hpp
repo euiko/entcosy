@@ -1,6 +1,7 @@
 #ifndef ENTCOSY_CORE_TYPEREGISTRY_HPP
 #define ENTCOSY_CORE_TYPEREGISTRY_HPP
 
+#include <cereal/types/polymorphic.hpp>
 #include <cinttypes>
 
 namespace entcosy
@@ -13,14 +14,21 @@ namespace entcosy
 
 
 #define ENTCOSY_DECLARE_TYPE public: static entcosy::core::TypeRegistry __ENTCOSY_type_reg
-#define ENTCOSY_DEFINE_TYPE(name) entcosy::core::TypeRegistry name::__ENTCOSY_type_reg
+
+#define ENTCOSY_REGISTER_TYPE(name) entcosy::core::TypeRegistry name::__ENTCOSY_type_reg
+
+#define ENTCOSY_DEFINE_COMPONENT_EVENTS(name) template<> ENTCOSY_REGISTER_TYPE(entcosy::events::OnComponentAssigned<name>); \
+    template<> ENTCOSY_REGISTER_TYPE(entcosy::events::OnComponentRemoved<name>)
+
+#define ENTCOSY_DEFINE_TYPE(name) ENTCOSY_REGISTER_TYPE(name); \
+    CEREAL_REGISTER_TYPE(entcosy::core::ComponentContainer<name>); \
+    CEREAL_REGISTER_POLYMORPHIC_RELATION(entcosy::core::BaseComponentContainer, entcosy::core::ComponentContainer<name>) \
 
 #define ENTCOSY_INITIALIZATION \
 	entcosy::TypeIndex entcosy::core::TypeRegistry::nextIndex = 1; \
 	\
-	ENTCOSY_DEFINE_TYPE(entcosy::events::OnEntityCreated);\
-	ENTCOSY_DEFINE_TYPE(entcosy::events::OnEntityDestroyed); 
-
+	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityCreated); \
+	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityDestroyed);
 
 
 namespace entcosy

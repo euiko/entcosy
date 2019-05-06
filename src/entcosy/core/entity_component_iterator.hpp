@@ -14,10 +14,10 @@ namespace entcosy
         class EntityComponentIterator
         {
         public:
-            EntityComponentIterator(Registry* registry, size_t index, bool is_end)
+            EntityComponentIterator(std::shared_ptr<Registry> registry, size_t index, bool is_end)
                 : m_registry(registry), m_index(index), m_isEnd(is_end)
             {
-                
+
             }
 
             size_t getIndex() const
@@ -92,7 +92,7 @@ namespace entcosy
         private:
             bool m_isEnd;
             size_t m_index;
-            Registry* m_registry;
+            std::shared_ptr<Registry> m_registry;
         };
     } // core
 } // ecs

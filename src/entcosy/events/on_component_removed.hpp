@@ -19,7 +19,7 @@ namespace entcosy
         };
 
 		template<typename T>
-        ENTCOSY_DEFINE_TYPE(OnComponentRemoved<T>);
+        ENTCOSY_REGISTER_TYPE(OnComponentRemoved<T>);
     } // events
 } // entcosy
 

@@ -30,14 +30,13 @@
 
 #endif
 
-
-#include <vector>
-#include <functional>
 #include <algorithm>
 #include <mutex>
+#include <cereal/types/functional.hpp>
+#include <cereal/types/memory.hpp>
 #include <unordered_map>
-#include <memory>
-#include <cereal/access.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/polymorphic.hpp>
 #include <cereal/archives/binary.hpp>
 
 #include "core/type_registry.hpp"
@@ -57,7 +56,7 @@ namespace entcosy
     } // events
     // END FORWARD
 
-    class Registry
+    class Registry : public std::enable_shared_from_this<Registry>
     {
     public:
         friend class cereal::access;
@@ -77,7 +76,7 @@ namespace entcosy
                 found->second.push_back(reinterpret_cast<core::BaseEventSubscriber*>(subscriber));
             }
         }
-        
+
         template <typename T>
         void unsubscribe(EventSubscriber<T> *subscriber)
         {
@@ -85,7 +84,7 @@ namespace entcosy
             auto found = m_events.find(typeId);
             if(found != m_events.end()) // There is event
             {
-                
+
                 found->second.erase(std::remove(found->second.begin(), found->second.end(), subscriber));
                 if(found->second.size() <= 0)
                 {
@@ -106,7 +105,7 @@ namespace entcosy
             }
         }
 
-        template<typename T>        
+        template<typename T>
         void emit(const T& event)
         {
             TypeIndex typeId = getTypeIndex<T>();
@@ -116,7 +115,7 @@ namespace entcosy
                 for(auto *bSubscriber: found->second)
                 {
                     EventSubscriber<T> *subscriber = reinterpret_cast<EventSubscriber<T>*>(bSubscriber);
-                    subscriber->receive(this, event); 
+                    subscriber->receive(shared_from_this(), event);
                 }
             }
         }
@@ -143,17 +142,17 @@ namespace entcosy
             return m_entities[index];
         }
 
-        template <class Archive>
-        void serialize( Archive & ar )
-        {
-            ar( m_entities );
-        }
-
         void registerSystem(std::shared_ptr<System> system);
 
         void unregisterSystem(std::shared_ptr<System> system);
 
         void update(float delta_time);
+
+        template <class Archive>
+        void serialize( Archive & ar )
+        {
+            ar( m_entities );
+        }
 
     private:
         std::vector<std::shared_ptr<Entity>> m_entities;
@@ -164,16 +163,16 @@ namespace entcosy
 
 #include "view.hpp"
 #include "system.hpp"
-#include "entity.hpp"
 #include "events/on_entity_destroyed.hpp"
 #include "events/on_entity_created.hpp"
+#include "entity.hpp"
 
 namespace entcosy
 {
 
     inline std::shared_ptr<Entity> Registry::create()
     {
-        std::shared_ptr<Entity> entity = std::make_shared<Entity>(this);
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(shared_from_this());
         m_entities.push_back(entity);
         // events::OnEntityCreated event = {entity};
         emit<events::OnEntityCreated>({ entity });
@@ -184,7 +183,7 @@ namespace entcosy
     {
         if(entity.get() == nullptr)
             return;
-        
+
         emit<events::OnEntityDestroyed>({ entity });
         m_entities.erase(std::remove(m_entities.begin(), m_entities.begin(), entity), m_entities.end());
     }
@@ -192,8 +191,8 @@ namespace entcosy
     template<typename... Types>
     inline View<Types...> Registry::each()
     {
-        core::EntityComponentIterator<Types...> first(this, 0, false);
-        core::EntityComponentIterator<Types...> last(this, getCount(), true);
+        core::EntityComponentIterator<Types...> first(shared_from_this(), 0, false);
+        core::EntityComponentIterator<Types...> last(shared_from_this(), getCount(), true);
         return View<Types...>(first, last);
     }
 
@@ -211,20 +210,20 @@ namespace entcosy
     {
         std::for_each(m_systems.begin(), m_systems.end(), [&](auto system)
         {
-            system->update(this, delta_time);
+            system->update(shared_from_this(), delta_time);
         });
     }
 
     inline void Registry::registerSystem(std::shared_ptr<System> system)
     {
         m_systems.push_back(system);
-        system->configure(this);
+        system->configure(shared_from_this());
     }
 
     inline void Registry::unregisterSystem(std::shared_ptr<System> system)
     {
         m_systems.erase( std::remove(m_systems.begin(), m_systems.end(), system), m_systems.end());
-        system->unconfigure(this);
+        system->unconfigure(shared_from_this());
     }
 } // ecs
 

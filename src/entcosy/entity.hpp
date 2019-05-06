@@ -2,9 +2,9 @@
 #define ENTCOSY_ENTITY_HPP
 
 #include <iostream>
-#include <unordered_map>
-#include <memory>
-#include <cereal/access.hpp>
+#include <cereal/types/polymorphic.hpp>
+#include <cereal/types/unordered_map.hpp>
+#include <cereal/types/memory.hpp>
 #include <cereal/archives/binary.hpp>
 #include "events/on_component_assigned.hpp"
 #include "events/on_component_removed.hpp"
@@ -19,7 +19,12 @@ namespace entcosy
     public:
         friend class cereal::access;
 
-        Entity(Registry *registry) : m_registry(registry)
+        Entity() : m_registry(nullptr)
+        {
+            m_id = m_typeRegistry.getIndex();
+        }
+
+        Entity(std::shared_ptr<Registry> registry) : m_registry(registry)
         {
             m_id = m_typeRegistry.getIndex();
         }
@@ -43,7 +48,7 @@ namespace entcosy
             T component = { args... };
             std::shared_ptr<core::ComponentContainer<T>> container = std::make_shared<core::ComponentContainer<T>>(component);
             m_components.insert({ typeId, container });
-            
+
             m_registry->emit<events::OnComponentAssigned<T>>({ shared_from_this(),  &container->component});
 
             return &container->component;
@@ -67,7 +72,7 @@ namespace entcosy
 			auto found = m_components.find(getTypeIndex<T>());
 			if (found != m_components.end())
 			{
-                std::shared_ptr<core::ComponentContainer<T>> container = 
+                std::shared_ptr<core::ComponentContainer<T>> container =
                     std::reinterpret_pointer_cast<core::ComponentContainer<T>> (found->second);
 
 				return &container->component;
@@ -95,17 +100,17 @@ namespace entcosy
         template <class Archive>
         void serialize( Archive & ar )
         {
-            ar( m_components );
+            ar( m_components, m_registry );
         }
 
     private:
-        std::unordered_map<TypeIndex, std::shared_ptr<core::BaseComponentContainer>> m_components; 
+        std::unordered_map<TypeIndex, std::shared_ptr<core::BaseComponentContainer>> m_components;
         TypeIndex m_id;
         core::TypeRegistry m_typeRegistry;
-        Registry* m_registry;
+        std::shared_ptr<Registry> m_registry;
 
     };
-    
+
 } // ecs
 
 #endif

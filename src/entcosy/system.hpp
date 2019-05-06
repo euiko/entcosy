@@ -3,23 +3,24 @@
 
 #include "registry.hpp"
 
+
 namespace entcosy
 {
     class System
     {
-    
+
 	public:
 		virtual ~System() {}
 
-		virtual void configure(Registry* registry)
+		virtual void configure(std::shared_ptr<Registry> registry)
 		{
 		}
 
-		virtual void unconfigure(Registry* registry)
+		virtual void unconfigure(std::shared_ptr<Registry> registry)
 		{
 		}
 
-		virtual void update(Registry* registry, float delta_time)
+		virtual void update(std::shared_ptr<Registry> registry, float delta_time)
 		{
 		}
     };

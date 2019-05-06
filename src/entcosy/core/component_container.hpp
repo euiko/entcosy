@@ -2,6 +2,7 @@
 #define ENTCOSY_BASE_COMPONENTCONTAINER_HPP
 
 #include <iostream>
+#include <cereal/types/polymorphic.hpp>
 
 namespace entcosy
 {
@@ -10,8 +11,14 @@ namespace entcosy
         struct BaseComponentContainer
         {
             virtual ~BaseComponentContainer() {}
-        }; 
-        
+
+            template<class Archive>
+            void serialize(Archive &ar)
+            {
+
+            }
+        };
+
         template<typename T>
         struct ComponentContainer : public BaseComponentContainer
         {
@@ -22,7 +29,13 @@ namespace entcosy
 
             ~ComponentContainer()
             {
-                // std::cout << "Desctruction Component " << T::__ENTCOSY_type_reg.getIndex() << "\n";   
+                // std::cout << "Desctruction Component " << T::__ENTCOSY_type_reg.getIndex() << "\n";
+            }
+
+            template<class Archive>
+            void serialize(Archive &ar)
+            {
+                ar(component);
             }
 
         };
