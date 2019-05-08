@@ -28,7 +28,8 @@ namespace entcosy
 	entcosy::TypeIndex entcosy::core::TypeRegistry::nextIndex = 1; \
 	\
 	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityCreated); \
-	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityDestroyed);
+	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityDestroyed); \
+	ENTCOSY_REGISTER_TYPE(entcosy::tags::UiCompTag);
 
 
 namespace entcosy

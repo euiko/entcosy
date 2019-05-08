@@ -40,12 +40,15 @@
 #include <cereal/archives/binary.hpp>
 
 #include "core/type_registry.hpp"
+#include "tags/ui_comp_tag.hpp"
 #include "event_subscriber.hpp"
 
 namespace entcosy
 {
     // BEGIN FORWARD
     class System;
+    template<typename T>
+    class UiSystem;
     template<typename ...Types>
     class View;
     class Entity;
@@ -54,6 +57,11 @@ namespace entcosy
         struct OnEntityCreated;
         struct OnEntityDestroyed;
     } // events
+    namespace core
+    {
+        class BaseUiSystem;
+    } // namespace core
+
     // END FORWARD
 
     class Registry : public std::enable_shared_from_this<Registry>
@@ -142,6 +150,30 @@ namespace entcosy
             return m_entities[index];
         }
 
+        template<typename T>
+        void changeUi()
+        {
+            TypeIndex uiStateId = getTypeIndex<T>();
+            auto found = m_uiSystems.find(uiStateId);
+            if(found != m_uiSystems.end())
+            {
+                active_ui_id = uiStateId;
+            }
+        }
+
+        void changeUiByName(const std::string &name)
+        {
+            for(auto &kv : m_uiSystems)
+            {
+                if(kv.second->getUiName() == name)
+                {
+                    active_ui_id = kv.first;
+                }
+            }
+        }
+
+        void registerUi(std::shared_ptr<core::BaseUiSystem> ui_system);
+
         void registerSystem(std::shared_ptr<System> system);
 
         void unregisterSystem(std::shared_ptr<System> system);
@@ -155,8 +187,10 @@ namespace entcosy
         }
 
     private:
+        TypeIndex active_ui_id = 0;
         std::vector<std::shared_ptr<Entity>> m_entities;
         std::vector<std::shared_ptr<System>> m_systems;
+        std::unordered_map<TypeIndex, std::shared_ptr<core::BaseUiSystem>> m_uiSystems;
         std::unordered_map<TypeIndex, std::vector<core::BaseEventSubscriber*>> m_events;
     };
 } // ecs
@@ -166,6 +200,7 @@ namespace entcosy
 #include "events/on_entity_destroyed.hpp"
 #include "events/on_entity_created.hpp"
 #include "entity.hpp"
+#include "ui_system.hpp"
 
 namespace entcosy
 {
@@ -212,6 +247,22 @@ namespace entcosy
         {
             system->update(shared_from_this(), delta_time);
         });
+
+        if(active_ui_id != 0)
+        {
+            auto found = m_uiSystems.find(active_ui_id);
+            if(found != m_uiSystems.end())
+            {
+                found->second->update(shared_from_this(), delta_time);
+            }
+        }
+    }
+
+    inline void Registry::registerUi(std::shared_ptr<core::BaseUiSystem> ui_system)
+    {
+        ui_system->configure(shared_from_this());
+        TypeIndex uiStateId = ui_system->getUiStateId();
+        m_uiSystems.insert(uiStateId, ui_system);
     }
 
     inline void Registry::registerSystem(std::shared_ptr<System> system)
