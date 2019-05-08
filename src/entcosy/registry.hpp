@@ -61,6 +61,11 @@ namespace entcosy
     public:
         friend class cereal::access;
 
+        ~Registry()
+        {
+            std::cout << "Registry destroyed\n";
+        }
+
         template <typename T>
         void subscribe(EventSubscriber<T> *subscriber)
         {
@@ -123,6 +128,11 @@ namespace entcosy
         std::shared_ptr<Entity> create();
 
         void destroy(std::shared_ptr<Entity> entity);
+
+        void clear()
+        {
+            m_entities.clear();
+        }
 
         template<typename... Types>
         void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback);
