@@ -133,7 +133,7 @@ namespace entcosy
             }
         }
 
-        std::shared_ptr<Entity> create();
+        std::shared_ptr<Entity> create(const char* name = "");
 
         void destroy(std::shared_ptr<Entity> entity);
 
@@ -141,6 +141,8 @@ namespace entcosy
         {
             m_entities.clear();
         }
+
+        void all(typename std::common_type<std::function<void(std::shared_ptr<Entity>)>>::type callback);
 
         template<typename... Types>
         void each(typename std::common_type<std::function<void(std::shared_ptr<Entity>, Types*...)>>::type callback);
@@ -200,9 +202,9 @@ namespace entcosy
 namespace entcosy
 {
 
-    inline std::shared_ptr<Entity> Registry::create()
+    inline std::shared_ptr<Entity> Registry::create(const char* name)
     {
-        std::shared_ptr<Entity> entity = std::make_shared<Entity>(shared_from_this());
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(shared_from_this(), name);
         m_entities.push_back(entity);
         // events::OnEntityCreated event = {entity};
         emit<events::OnEntityCreated>({ entity });
@@ -233,6 +235,13 @@ namespace entcosy
         std::for_each(view.begin(), view.end(), [&](auto entity)
         {
             callback(entity, entity->template get<Types>()...);
+        });
+    }
+    inline void Registry::all(typename std::common_type<std::function<void(std::shared_ptr<Entity>)>>::type callback)
+    {
+        std::for_each(m_entities.begin(), m_entities.end(), [&](std::shared_ptr<Entity> entity)
+        {
+            callback(entity);
         });
     }
 

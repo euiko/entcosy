@@ -2,6 +2,7 @@
 #define ENTCOSY_ENTITY_HPP
 
 #include <iostream>
+#include <cereal/types/string.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/memory.hpp>
@@ -24,14 +25,24 @@ namespace entcosy
             m_id = m_typeRegistry.getIndex();
         }
 
-        Entity(std::shared_ptr<Registry> registry) : m_registry(registry)
+        Entity(std::shared_ptr<Registry> registry, const char* name = "") : m_registry(registry), m_name(name)
         {
             m_id = m_typeRegistry.getIndex();
+            if(this->m_name == "")
+            {
+
+                this->m_name = "Entity " + std::to_string(m_id);
+            }
         }
 
         TypeIndex getEntityId()
         {
             return m_id;
+        }
+
+        const char * getEntityName() const
+        {
+            return m_name.data();
         }
 
         template<typename T, typename... TArgs>
@@ -108,7 +119,7 @@ namespace entcosy
         TypeIndex m_id;
         core::TypeRegistry m_typeRegistry;
         std::shared_ptr<Registry> m_registry;
-
+        std::string m_name;
     };
 
 } // ecs
