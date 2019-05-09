@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <mutex>
+#include <rttr/type>
 #include <cereal/types/functional.hpp>
 #include <cereal/types/memory.hpp>
 #include <unordered_map>
@@ -69,6 +70,8 @@ namespace entcosy
     public:
         friend class cereal::access;
 
+        Registry() { }
+
         ~Registry()
         {
             std::cout << "Registry destroyed\n";
@@ -77,7 +80,7 @@ namespace entcosy
         template <typename T>
         void subscribe(EventSubscriber<T> *subscriber)
         {
-            TypeIndex typeId = getTypeIndex<T>();
+            rttr::type typeId = rttr::type::get<T>();
             auto found = m_events.find(typeId);
             if(found == m_events.end()) // There is no event
             {
@@ -93,8 +96,7 @@ namespace entcosy
         template <typename T>
         void unsubscribe(EventSubscriber<T> *subscriber)
         {
-            TypeIndex typeId = getTypeIndex<T>();
-            auto found = m_events.find(typeId);
+            auto found = m_events.find(rttr::type::get<T>());
             if(found != m_events.end()) // There is event
             {
 
@@ -121,8 +123,7 @@ namespace entcosy
         template<typename T>
         void emit(const T& event)
         {
-            TypeIndex typeId = getTypeIndex<T>();
-            auto found = m_events.find(typeId);
+            auto found = m_events.find(rttr::type::get<T>());
             if(found != m_events.end())
             {
                 for(auto *bSubscriber: found->second)
@@ -184,11 +185,11 @@ namespace entcosy
         }
 
     private:
-        TypeIndex active_ui_id = 0;
+        std::string m_activeUiName;
         std::vector<std::shared_ptr<Entity>> m_entities;
         std::vector<std::shared_ptr<System>> m_systems;
-        std::unordered_map<TypeIndex, std::shared_ptr<core::BaseUiSystem>> m_uiSystems;
-        std::unordered_map<TypeIndex, std::vector<core::BaseEventSubscriber*>> m_events;
+        std::unordered_map<rttr::type, std::shared_ptr<core::BaseUiSystem>> m_uiSystems;
+        std::unordered_map<rttr::type, std::vector<core::BaseEventSubscriber*>> m_events;
     };
 } // ecs
 
@@ -252,9 +253,9 @@ namespace entcosy
             system->update(shared_from_this(), delta_time);
         });
 
-        if(active_ui_id != 0)
+        if(m_activeUiName != "")
         {
-            auto found = m_uiSystems.find(active_ui_id);
+            auto found = m_uiSystems.find(rttr::type::get_by_name(m_activeUiName));
             if(found != m_uiSystems.end())
             {
                 found->second->update(shared_from_this(), delta_time);
@@ -264,9 +265,9 @@ namespace entcosy
 
     inline void Registry::renderUi()
     {
-        if(active_ui_id != 0)
+        if(m_activeUiName != "")
         {
-            auto found = m_uiSystems.find(active_ui_id);
+            auto found = m_uiSystems.find(rttr::type::get_by_name(m_activeUiName));
             if(found != m_uiSystems.end())
             {
                 found->second->renderUi(shared_from_this());
@@ -277,11 +278,11 @@ namespace entcosy
     template<typename T>
     inline void Registry::changeUi()
     {
-        TypeIndex uiStateId = getTypeIndex<T>();
-        auto found = m_uiSystems.find(uiStateId);
+        rttr::type uiStateType = rttr::type::get<T>();
+        auto found = m_uiSystems.find(uiStateType);
         if(found != m_uiSystems.end())
         {
-            active_ui_id = uiStateId;
+            m_activeUiName = uiStateType.get_name().data();
         }
     }
 
@@ -291,7 +292,7 @@ namespace entcosy
         {
             if(kv.second->getUiName() == name)
             {
-                active_ui_id = kv.first;
+                m_activeUiName = kv.first.get_name().data();
             }
         }
     }
@@ -299,12 +300,12 @@ namespace entcosy
     inline void Registry::registerUi(std::shared_ptr<core::BaseUiSystem> ui_system)
     {
         ui_system->configure(shared_from_this());
-        TypeIndex uiStateId = ui_system->getUiStateId();
+        rttr::type uiStateType = ui_system->getUiStateType();
         if(m_uiSystems.size() == 0)
         {
-            active_ui_id = uiStateId;
+            m_activeUiName = uiStateType.get_name().data();
         }
-        m_uiSystems.insert({uiStateId, ui_system});
+        m_uiSystems.insert({uiStateType, ui_system});
     }
 
     inline void Registry::registerSystem(std::shared_ptr<System> system)

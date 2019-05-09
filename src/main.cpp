@@ -2,6 +2,7 @@
 #include <vector>
 #include <deque>
 #include <ctime>
+#include <rttr/type>
 #include <fstream>
 #include "entcosy/registry.hpp"
 
@@ -30,6 +31,10 @@ struct PositionComponent
     ENTCOSY_DECLARE_TYPE;
     int x, y;
 
+    PositionComponent() : x(0), y(0) { }
+
+    PositionComponent(const int &x, const int &y) : x(x), y(y) { }
+
     template<class Archive>
     void serialize(Archive &ar)
     {
@@ -49,14 +54,25 @@ struct VelocityComponent
     }
 };
 
-
 ENTCOSY_INITIALIZATION;
-//template<> entcosy::core::TypeRegistry entcosy::events::OnComponentAssigned<VelocityComponent>::__ENTCOSY_type_reg;
-ENTCOSY_DEFINE_TYPE(PlayerTag);
-ENTCOSY_DEFINE_TYPE(EnemyTag);
-ENTCOSY_DEFINE_TYPE(PositionComponent);
-ENTCOSY_DEFINE_TYPE(VelocityComponent);
+RTTR_REGISTRATION {
+    ENTCOSY_BEGIN_DEFINE;
+    //template<> entcosy::core::TypeRegistry entcosy::events::OnComponentAssigned<VelocityComponent>::__ENTCOSY_type_reg;
+    ENTCOSY_DEFINE_TYPE(PlayerTag);
+    ENTCOSY_DEFINE_TYPE(EnemyTag);
+    ENTCOSY_DEFINE_TYPE(PositionComponent);
+    ENTCOSY_DEFINE_TYPE(VelocityComponent);
 
+    rttr::registration::class_<PositionComponent>("PositionComponent")
+        .constructor<const int&, const int&>()
+        .property("x", &PositionComponent::x)
+        .property("y", &PositionComponent::y);
+}
+
+ENTCOSY_SERIALIZATION_REGISTER(PlayerTag);
+ENTCOSY_SERIALIZATION_REGISTER(EnemyTag);
+ENTCOSY_SERIALIZATION_REGISTER(PositionComponent);
+ENTCOSY_SERIALIZATION_REGISTER(VelocityComponent);
 
 struct Timer final {
     Timer(): start{std::chrono::system_clock::now()} {}
@@ -69,7 +85,6 @@ struct Timer final {
 private:
     std::chrono::time_point<std::chrono::system_clock> start;
 };
-
 
 
 int main()
@@ -93,12 +108,24 @@ int main()
         cereal::BinaryInputArchive archive( is );
         std::shared_ptr<entcosy::Registry> registry;
         archive(registry);
+
         registry->each<PositionComponent, VelocityComponent>([&](std::shared_ptr<entcosy::Entity> ent, PositionComponent *pc,
             VelocityComponent *vc
         )
         {
-            std::cout << "Entity " << ent->getEntityId() << ": Position("<<pc->x<<","<<pc->y<<")"
-                << " and Velocity("<< vc->speed <<")\n";
+            ent->all([&](rttr::type componentType, rttr::variant value)
+            {
+                std::cout << componentType.get_name() << "\n";
+                for(auto &property: componentType.get_properties())
+                {
+                    rttr::variant m = property.get_value(value);
+                    std::cout << property.get_name() << " = " << m.to_int() << "\n";
+                }
+                std::cout << "\n";
+            });
+
+            // std::cout << "Entity " << ent->getEntityId() << ": Position("<<pc->x<<","<<pc->y<<")"
+            //     << " and Velocity("<< vc->speed <<")\n";
         });
     }
     timer.elapsed();

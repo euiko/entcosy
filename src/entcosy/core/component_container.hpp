@@ -1,6 +1,7 @@
 #ifndef ENTCOSY_BASE_COMPONENTCONTAINER_HPP
 #define ENTCOSY_BASE_COMPONENTCONTAINER_HPP
 
+#include <rttr/type>
 #include <iostream>
 #include <cereal/types/polymorphic.hpp>
 
@@ -17,13 +18,15 @@ namespace entcosy
             {
 
             }
+
+            RTTR_ENABLE()
         };
 
         template<typename T>
         struct ComponentContainer : public BaseComponentContainer
         {
-            ComponentContainer() {}
-            ComponentContainer(const T& component) : component(component) { }
+            ComponentContainer() : BaseComponentContainer() {}
+            ComponentContainer(const T& component) : BaseComponentContainer(), component(component) { }
 
             T component;
 
@@ -38,6 +41,7 @@ namespace entcosy
                 ar(component);
             }
 
+            RTTR_ENABLE(BaseComponentContainer)
         };
     } // base
 } // ecs

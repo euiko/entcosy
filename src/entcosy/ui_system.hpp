@@ -2,6 +2,7 @@
 #define ENTCOSY_UISYSTEM_HPP
 
 #include <cassert>
+#include <rttr/type>
 #include "entity.hpp"
 #include "core/base_ui_system.hpp"
 
@@ -15,9 +16,9 @@ namespace entcosy
         virtual void configureUi(std::shared_ptr<Registry> registry, std::shared_ptr<Entity> entity) { }
         virtual void updateUi(std::shared_ptr<Registry> registry, T* ui_state, float delta_time) { }
 
-        TypeIndex getUiStateId() const
+        rttr::type getUiStateType() const
         {
-            return getTypeIndex<T>();
+            return rttr::type::get<T>();
         }
 
         void configure(std::shared_ptr<Registry> registry)

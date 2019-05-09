@@ -10,9 +10,12 @@ namespace entcosy
     {
         struct OnEntityCreated
         {
-            ENTCOSY_DECLARE_TYPE;
+            OnEntityCreated() { }
+            OnEntityCreated(std::shared_ptr<Entity> entity) : entity(entity) { }
 
             std::shared_ptr<Entity> entity;
+
+            RTTR_ENABLE();
         };
 
     } // events

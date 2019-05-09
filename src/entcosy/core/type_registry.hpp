@@ -2,6 +2,8 @@
 #define ENTCOSY_CORE_TYPEREGISTRY_HPP
 
 #include <cereal/types/polymorphic.hpp>
+#include <rttr/type>
+#include <rttr/registration>
 #include <string>
 #include <cinttypes>
 
@@ -15,24 +17,24 @@ namespace entcosy
 
 
 
-#define ENTCOSY_DECLARE_TYPE public: static entcosy::core::TypeRegistry __ENTCOSY_type_reg
+// #define ENTCOSY_DECLARE_TYPE public: static entcosy::core::TypeRegistry __ENTCOSY_type_reg
+#define ENTCOSY_DECLARE_TYPE
 
-#define ENTCOSY_REGISTER_TYPE(name) entcosy::core::TypeRegistry name::__ENTCOSY_type_reg("name")
+// #define ENTCOSY_REGISTER_TYPE(name) entcosy::core::TypeRegistry name::__ENTCOSY_type_reg("name")
+#define ENTCOSY_DEFINE_TYPE(name) rttr::registration::class_<entcosy::core::ComponentContainer<name>>("entcosy::core::ComponentContainer<" #name ">") \
+        .constructor<>() \
+        .constructor<name&>() \
+        .property("component", &entcosy::core::ComponentContainer<name>::component); \
 
-#define ENTCOSY_DEFINE_COMPONENT_EVENTS(name) template<> ENTCOSY_REGISTER_TYPE(entcosy::events::OnComponentAssigned<name>); \
-    template<> ENTCOSY_REGISTER_TYPE(entcosy::events::OnComponentRemoved<name>)
+#define ENTCOSY_SERIALIZATION_REGISTER(name) CEREAL_REGISTER_TYPE(entcosy::core::ComponentContainer<name>); \
+    CEREAL_REGISTER_POLYMORPHIC_RELATION(entcosy::core::BaseComponentContainer, entcosy::core::ComponentContainer<name>)
 
-#define ENTCOSY_DEFINE_TYPE(name) ENTCOSY_REGISTER_TYPE(name); \
-    CEREAL_REGISTER_TYPE(entcosy::core::ComponentContainer<name>); \
-    CEREAL_REGISTER_POLYMORPHIC_RELATION(entcosy::core::BaseComponentContainer, entcosy::core::ComponentContainer<name>) \
+#define ENTCOSY_BEGIN_DEFINE ENTCOSY_DEFINE_TYPE(entcosy::tags::UiCompTag)
 
-#define ENTCOSY_INITIALIZATION \
-	entcosy::TypeIndex entcosy::core::TypeRegistry::nextIndex = 1; \
-	\
-	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityCreated); \
-	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityDestroyed); \
-	ENTCOSY_DEFINE_TYPE(entcosy::tags::UiCompTag);
-
+#define ENTCOSY_INITIALIZATION entcosy::TypeIndex entcosy::core::TypeRegistry::nextIndex = 1
+	//
+	// ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityCreated);
+	// ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityDestroyed);
 namespace entcosy
 {
     typedef uint32_t TypeIndex;

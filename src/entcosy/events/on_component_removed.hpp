@@ -12,14 +12,14 @@ namespace entcosy
         template<typename T>
         struct OnComponentRemoved
         {
-            ENTCOSY_DECLARE_TYPE;
+            OnComponentRemoved() { }
+            OnComponentRemoved(std::shared_ptr<Entity> entity, T* component) : entity(entity), component(component) { }
 
             std::shared_ptr<Entity> entity;
             std::shared_ptr<T> component;
-        };
 
-		template<typename T>
-        ENTCOSY_REGISTER_TYPE(OnComponentRemoved<T>);
+            RTTR_ENABLE();
+        };
     } // events
 } // entcosy
 

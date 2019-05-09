@@ -2,6 +2,7 @@
 #define ENTCOSY_ENTITY_HPP
 
 #include <iostream>
+#include <rttr/type>
 #include <cereal/types/string.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include <cereal/types/unordered_map.hpp>
@@ -45,11 +46,24 @@ namespace entcosy
             return m_name.data();
         }
 
+        void all(typename std::common_type<std::function<void(rttr::type&, rttr::variant&)>>::type callback)
+        {
+            for(auto& kv: m_components)
+            {
+                rttr::type containerType = rttr::type::get(*kv.second.get());
+                rttr::property prop = containerType.get_property("component");
+                rttr::variant value = prop.get_value(*kv.second.get());
+                rttr::type realType = value.get_type();
+                callback(realType, value);
+            }
+        }
+
         template<typename T, typename... TArgs>
         T* assign(TArgs&& ...args)
         {
-            TypeIndex typeId = getTypeIndex<T>();
-            auto found = m_components.find(typeId);
+            rttr::type typeId = rttr::type::get<T>();
+            rttr::type::type_id id = typeId.get_id();
+            auto found = m_components.find(id);
             if (found != m_components.end())
             {
                 std::shared_ptr<core::ComponentContainer<T>> container= std::reinterpret_pointer_cast<core::ComponentContainer<T>> (found->second);
@@ -58,7 +72,7 @@ namespace entcosy
             }
             T component = { args... };
             std::shared_ptr<core::ComponentContainer<T>> container = std::make_shared<core::ComponentContainer<T>>(component);
-            m_components.insert({ typeId, container });
+            m_components.insert({ id, container });
 
             m_registry->emit<events::OnComponentAssigned<T>>({ shared_from_this(),  &container->component});
 
@@ -68,7 +82,8 @@ namespace entcosy
         template<typename T>
         void remove()
         {
-            auto found = m_components.find(getTypeIndex<T>());
+            rttr::type typeId = rttr::type::get<T>();
+            auto found = m_components.find(typeId.get_id());
             if(found != m_components.end())
             {
                 std::shared_ptr<core::ComponentContainer<T>> container= std::reinterpret_pointer_cast<core::ComponentContainer<T>> (found->second);
@@ -80,7 +95,8 @@ namespace entcosy
         template<typename T>
         T* get()
 		{
-			auto found = m_components.find(getTypeIndex<T>());
+            rttr::type typeId = rttr::type::get<T>();
+            auto found = m_components.find(typeId.get_id());
 			if (found != m_components.end())
 			{
                 std::shared_ptr<core::ComponentContainer<T>> container =
@@ -104,8 +120,8 @@ namespace entcosy
         template<typename T>
         bool has()
         {
-            TypeIndex typeId = getTypeIndex<T>();
-            return m_components.find(typeId) != m_components.end();
+            rttr::type typeId = rttr::type::get<T>();;
+            return m_components.find(typeId.get_id()) != m_components.end();
         }
 
         template <class Archive>
@@ -115,7 +131,7 @@ namespace entcosy
         }
 
     private:
-        std::unordered_map<TypeIndex, std::shared_ptr<core::BaseComponentContainer>> m_components;
+        std::unordered_map<rttr::type::type_id, std::shared_ptr<core::BaseComponentContainer>> m_components;
         TypeIndex m_id;
         core::TypeRegistry m_typeRegistry;
         std::shared_ptr<Registry> m_registry;

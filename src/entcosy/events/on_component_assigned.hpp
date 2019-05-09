@@ -12,14 +12,15 @@ namespace entcosy
         template<typename T>
         struct OnComponentAssigned
         {
-            ENTCOSY_DECLARE_TYPE;
+            OnComponentAssigned() { }
+            OnComponentAssigned(std::shared_ptr<Entity> entity, T* component) : entity(entity), component(component) { }
 
             std::shared_ptr<entcosy::Entity> entity;
             T* component;
+
+            RTTR_ENABLE();
         };
 
-		template<typename T>
-        ENTCOSY_REGISTER_TYPE(OnComponentAssigned<T>);
     } // events
 } // entcosy
 
