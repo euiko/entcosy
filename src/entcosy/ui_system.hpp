@@ -11,10 +11,9 @@ namespace entcosy
     template<typename T>
     class UiSystem : public core::BaseUiSystem
     {
-
-        virtual void updateUi(std::shared_ptr<Registry> registry, T* ui_state, float delta_time) { }
-
+    public:
         virtual void configureUi(std::shared_ptr<Registry> registry, std::shared_ptr<Entity> entity) { }
+        virtual void updateUi(std::shared_ptr<Registry> registry, T* ui_state, float delta_time) { }
 
         TypeIndex getUiStateId() const
         {
@@ -29,15 +28,24 @@ namespace entcosy
             entity->assign<T>();
             configureUi(registry, entity);
         }
-        void update(std::shared_ptr<Registry> registry, float delta_time)
+
+        T* getUiState(std::shared_ptr<Registry> registry)
         {
-            T* uiState;
+            T* uiState = nullptr;
             registry->each<T>([&](std::shared_ptr<Entity> entity, T* ui_state)
             {
                 uiState = ui_state;
             });
-            updateUi(registry, uiState, delta_time);
+            assert(uiState != nullptr);
+            return uiState;
         }
+
+        void update(std::shared_ptr<Registry> registry, float delta_time)
+        {
+            updateUi(registry, getUiState(registry), delta_time);
+        }
+
+        virtual void renderUi(std::shared_ptr<Registry> registry) { }
     };
 } // namespace entcosy
 

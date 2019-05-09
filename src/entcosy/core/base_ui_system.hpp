@@ -10,9 +10,9 @@ namespace entcosy
     {
         class BaseUiSystem : public System
         {
+        public:
             ~BaseUiSystem() { }
-            virtual void configureUi(std::shared_ptr<Registry> registry) = 0;
-            virtual void updateUi(std::shared_ptr<Registry> registry) = 0;
+            virtual void renderUi(std::shared_ptr<Registry> registry) = 0;
             virtual std::string getUiName() const = 0;
             virtual TypeIndex getUiStateId() const = 0;
         };

@@ -161,26 +161,9 @@ namespace entcosy
         }
 
         template<typename T>
-        void changeUi()
-        {
-            TypeIndex uiStateId = getTypeIndex<T>();
-            auto found = m_uiSystems.find(uiStateId);
-            if(found != m_uiSystems.end())
-            {
-                active_ui_id = uiStateId;
-            }
-        }
+        void changeUi();
 
-        void changeUiByName(const std::string &name)
-        {
-            for(auto &kv : m_uiSystems)
-            {
-                if(kv.second->getUiName() == name)
-                {
-                    active_ui_id = kv.first;
-                }
-            }
-        }
+        void changeUiByName(const std::string &name);
 
         void registerUi(std::shared_ptr<core::BaseUiSystem> ui_system);
 
@@ -189,6 +172,8 @@ namespace entcosy
         void unregisterSystem(std::shared_ptr<System> system);
 
         void update(float delta_time);
+
+        void renderUi();
 
         template <class Archive>
         void serialize( Archive & ar )
@@ -268,11 +253,49 @@ namespace entcosy
         }
     }
 
+    inline void Registry::renderUi()
+    {
+        if(active_ui_id != 0)
+        {
+            auto found = m_uiSystems.find(active_ui_id);
+            if(found != m_uiSystems.end())
+            {
+                found->second->renderUi(shared_from_this());
+            }
+        }
+    }
+
+    template<typename T>
+    inline void Registry::changeUi()
+    {
+        TypeIndex uiStateId = getTypeIndex<T>();
+        auto found = m_uiSystems.find(uiStateId);
+        if(found != m_uiSystems.end())
+        {
+            active_ui_id = uiStateId;
+        }
+    }
+
+    inline void Registry::changeUiByName(const std::string &name)
+    {
+        for(auto &kv : m_uiSystems)
+        {
+            if(kv.second->getUiName() == name)
+            {
+                active_ui_id = kv.first;
+            }
+        }
+    }
+
     inline void Registry::registerUi(std::shared_ptr<core::BaseUiSystem> ui_system)
     {
         ui_system->configure(shared_from_this());
         TypeIndex uiStateId = ui_system->getUiStateId();
-        m_uiSystems.insert(uiStateId, ui_system);
+        if(m_uiSystems.size() == 0)
+        {
+            active_ui_id = uiStateId;
+        }
+        m_uiSystems.insert({uiStateId, ui_system});
     }
 
     inline void Registry::registerSystem(std::shared_ptr<System> system)

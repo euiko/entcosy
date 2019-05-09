@@ -29,7 +29,7 @@ namespace entcosy
 	\
 	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityCreated); \
 	ENTCOSY_REGISTER_TYPE(entcosy::events::OnEntityDestroyed); \
-	ENTCOSY_REGISTER_TYPE(entcosy::tags::UiCompTag);
+	ENTCOSY_DEFINE_TYPE(entcosy::tags::UiCompTag);
 
 
 namespace entcosy

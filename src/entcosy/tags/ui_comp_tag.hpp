@@ -24,6 +24,12 @@ namespace entcosy
                 id = m_typeRegistry.getIndex();
             }
 
+            template<class Archive>
+            void serialize(Archive &ar)
+            {
+
+            }
+
         private:
             core::TypeRegistry m_typeRegistry;
         };
