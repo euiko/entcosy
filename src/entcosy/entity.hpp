@@ -13,6 +13,29 @@
 #include "core/component_container.hpp"
 #include "core/type_registry.hpp"
 
+
+struct MenuUiComponent
+{
+    ENTCOSY_DECLARE_TYPE;
+
+    MenuUiComponent() : health(0), color(0.0f), is_tool_active(false) { }
+
+    int health;
+    float color;
+
+    bool is_tool_active;
+    rttr::string_view active_component_name;
+    rttr::variant current_variant;
+
+    template<class Archive>
+    void serialize(Archive &ar)
+    {
+
+    }
+
+    RTTR_ENABLE();
+};
+
 namespace entcosy
 {
     class Registry;
@@ -33,6 +56,9 @@ namespace entcosy
             {
 
                 this->m_name = "Entity " + std::to_string(m_id);
+            } else
+            {
+                this->m_name += " " + std::to_string(m_id);
             }
         }
 
@@ -50,11 +76,17 @@ namespace entcosy
         {
             for(auto& kv: m_components)
             {
-                rttr::type containerType = rttr::type::get(*kv.second.get());
-                rttr::property prop = containerType.get_property("component");
-                rttr::variant value = prop.get_value(*kv.second.get());
-                rttr::type realType = value.get_type();
-                callback(realType, value);
+
+                rttr::type componentContainerType = rttr::type::get(*kv.second);
+                rttr::property componentContainerProp = componentContainerType.get_property("component");
+                rttr::variant componentContainerVariant = componentContainerProp.get_value(kv.second);
+
+                rttr::type realType = componentContainerProp.get_type();
+
+                // realType.set_property_value("health", componentContainerVariant, 200);
+                // std::shared_ptr<core::ComponentContainer<MenuUiComponent>> container = std::reinterpret_pointer_cast<core::ComponentContainer<MenuUiComponent>> (kv.second);
+
+                callback(realType, componentContainerVariant);
             }
         }
 
@@ -136,6 +168,9 @@ namespace entcosy
         core::TypeRegistry m_typeRegistry;
         std::shared_ptr<Registry> m_registry;
         std::string m_name;
+
+        // RTTR_ENABLE();
+        // RTTR_REGISTRATION_FRIEND;
     };
 
 } // ecs

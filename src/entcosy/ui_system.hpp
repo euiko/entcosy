@@ -23,7 +23,6 @@ namespace entcosy
 
         void configure(std::shared_ptr<Registry> registry)
         {
-            assert(getTypeIndex<T>());
             std::shared_ptr<Entity> entity = registry->create();
             entity->assign<tags::UiCompTag>();
             entity->assign<T>();
@@ -37,7 +36,6 @@ namespace entcosy
             {
                 uiState = ui_state;
             });
-            assert(uiState != nullptr);
             return uiState;
         }
 

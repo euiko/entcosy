@@ -166,6 +166,9 @@ namespace entcosy
         template<typename T>
         void changeUi();
 
+        template<typename T>
+        bool isUiActive();
+
         void changeUiByName(const std::string &name);
 
         void registerUi(std::shared_ptr<core::BaseUiSystem> ui_system);
@@ -190,6 +193,9 @@ namespace entcosy
         std::vector<std::shared_ptr<System>> m_systems;
         std::unordered_map<rttr::type, std::shared_ptr<core::BaseUiSystem>> m_uiSystems;
         std::unordered_map<rttr::type, std::vector<core::BaseEventSubscriber*>> m_events;
+
+        // RTTR_ENABLE();
+        // RTTR_REGISTRATION_FRIEND;
     };
 } // ecs
 
@@ -284,6 +290,12 @@ namespace entcosy
         {
             m_activeUiName = uiStateType.get_name().data();
         }
+    }
+
+    template<typename T>
+    inline bool Registry::isUiActive()
+    {
+        return rttr::type::get<T>() == rttr::type::get_by_name(m_activeUiName) ? true : false;
     }
 
     inline void Registry::changeUiByName(const std::string &name)

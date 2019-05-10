@@ -11,6 +11,7 @@ namespace entcosy
     {
         struct BaseComponentContainer
         {
+            BaseComponentContainer() { }
             virtual ~BaseComponentContainer() {}
 
             template<class Archive>

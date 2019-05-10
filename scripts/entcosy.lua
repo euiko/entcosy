@@ -5,7 +5,7 @@ dofile "3rdparty/rttr.lua"
 
 project "entcosy"
   	language "C++"
-    kind     "ConsoleApp"
+    kind     "StaticLib"
     defines {
         -- "ENTCOSY_NO_RTTI",
         -- "ENTRY_CONFIG_USE_SDL=1",
@@ -27,26 +27,9 @@ project "entcosy"
     }
 
     links {
+        "cereal",
         "rttr",
         -- "pstl",
     }
 
-    buildoptions {
-        "-std=c++17",
-        "-fopenmp-simd",
-        -- "-fno-rtti",
-        -- "-fno-exceptions",
-    }
-
-    configuration "linux or bsd"
-        linkoptions { "-fPIC" }
-        initX11()
-        links {
-            "GL",
-            "GLU",
-            "glut",
-            "tbb",
-            "EGL",
-            "GLESv2",
-        }
 
