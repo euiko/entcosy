@@ -4,7 +4,7 @@
 #include <ctime>
 #include <rttr/type>
 #include <fstream>
-#include "entcosy/registry.hpp"
+#include <entcosy/registry.hpp>
 
 struct PlayerTag
 {
